@@ -61,6 +61,82 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-test" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/04/07/test/" class="article-date">
+  <time datetime="2018-04-07T15:00:35.000Z" itemprop="datePublished">2018-04-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/07/test/">test</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/04/07/test/" data-id="cjfpib1zt00015etm4474h3cc" class="article-share-link">Teilen</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-reverse-pairs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/27/reverse-pairs/" class="article-date">
+  <time datetime="2017-12-27T13:13:00.000Z" itemprop="datePublished">2017-12-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/27/reverse-pairs/">reverse pairs</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="一般规律"><a href="#一般规律" class="headerlink" title="一般规律"></a>一般规律</h1><p>解决方案：基于BST、BIT、合并排序等，在这里，我想着重讨论这些解决方案的一般原则及其在一些类似问题中的可能应用。<br>核心思想：分解数组并解决子问题。定义：假设输入数组int nums[n],数组nums[i,j]表示从下标i到j（包括在内）的子数组，T[i,j]表示适用于这个子数组的同样问题。</p>
+<p>有了上面的定义，我们直接给出初始的问题T[0,n-1],接下来的关键是如何从它的子数组来找出该问题的解决方案，本质上相当于构建T[i,j]的递推关系，如果能解决T[i,j]，就可以找出更大子数组直到解决初始问题T[0,n-1]。<br>引入两种常用地推关系：<br>1.顺序递推关系：T(i, j) = T(i, j - 1) + C,元素将顺序处理，C表示处理最后一个元素的子问题。<br>2.分区递推关系：T(i, j) = T(i, m) + T(m + 1, j) + C ，m = (i+j)/2，子数组nums[i,j]将被进一步划分为两部分，C表示结合两部分的子问题。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2017/12/27/reverse-pairs/" data-id="cjfpib1zz00025etmhgc5g0nm" class="article-share-link">Teilen</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/12/27/hello-world/" class="article-date">
@@ -96,7 +172,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/27/hello-world/" data-id="cjbp1qiys00024r9xjla1bwe2" class="article-share-link">Teilen</a>
+      <a data-url="http://yoursite.com/2017/12/27/hello-world/" data-id="cjfpib1zm00005etm291lzw77" class="article-share-link">Teilen</a>
       
       
     </footer>
@@ -144,7 +220,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2017/12/20/Java-error-set/" data-id="cjbp1qiyd00004r9xfqs6mbkn" class="article-share-link">Teilen</a>
+      <a data-url="http://yoursite.com/2017/12/20/Java-error-set/" data-id="cjfpib20100035etmktj1sa1i" class="article-share-link">Teilen</a>
       
       
     </footer>
@@ -164,15 +240,29 @@
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/LeetCode/">LeetCode</a></li></ul>
+    </div>
+  </div>
+
 
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/LeetCode/" style="font-size: 10px;">LeetCode</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">Archiv</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li></ul>
     </div>
   </div>
 
@@ -183,6 +273,14 @@
     <h3 class="widget-title">letzter Beitrag</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2018/04/07/test/">test</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/27/reverse-pairs/">reverse pairs</a>
+          </li>
         
           <li>
             <a href="/2017/12/27/hello-world/">Hello World</a>
@@ -204,7 +302,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 luokp<br>
+      &copy; 2018 luokp<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
