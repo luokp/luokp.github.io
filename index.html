@@ -240,6 +240,239 @@
 
 
   
+    <article id="post-YARN详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/08/YARN详解/">YARN详解</a>
+    </h1>
+  
+
+        
+        <a href="/2018/04/08/YARN详解/" class="archive-article-date">
+  	<time datetime="2018-04-08T01:09:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一、第二代MapReduce<br>    上一代MapReduce框架的JobTracker/TaskTracker 机制需要大规模的调整来修复它在可扩展性，内存消耗，线程模型，可靠性和性能上的缺陷。为从根本上解决旧 MapReduce 框架的性能瓶颈，促进 Hadoop 框架的更长远发展，从 0.23.0 版本开始，Hadoop 的 MapReduce 框架完全重构，发生了根本的变化。新的 Hadoop MapReduce 框架命名为 MapReduceV2 或者叫 Yarn，其架构图如下图所示：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fq4ztpyhxij30er09iglz.jpg" alt=""></p>
+<pre><code>图 2. 新的 Hadoop MapReduce 框架（Yarn）架构
+</code></pre><p>1、资源管理器（ResourceManager）<br>            分为两个组件：</p>
+<ul>
+<li>调度器（Scheduler）：根据集群中容量、队列和资源等限制，将资源分配给正在运行的应用。根据各个应用的资源需求和集群各个节点的资源容器（Resource Container，是集群几点将自身的cpu、内存、磁盘等资源的一种抽象封装）进行调度。</li>
+<li>应用管理器（ApplicationManager）：负责接收作业，协商获取第一个资源容器用于执行作业，为重启失败的作业重新分配容器。</li>
+</ul>
+<p>2、节点管理器（NodeManager）<br>        是每个节点的框架代理。主要功能：</p>
+<ul>
+<li>启动调度器分配给task的容器，为task构建容器环境</li>
+<li>监控容器的资源使用（CPU、内存、硬盘、网络带宽）</li>
+<li>与调度器保持信息汇报交互</li>
+</ul>
+<p>3、应用主体（AppMaster）<br>        每一个应用都有一个对应的APPMaster，主要职责：</p>
+<ul>
+<li>与调度器协商资源</li>
+<li>启动并监控在容器中运行的task（map/reduce）</li>
+<li>若task出现故障，向调度器重新申请分配其他容器资源，并重新启动task</li>
+<li>计算应用程序所需的资源数目，转化成调度器可识别的协议信息包。</li>
+</ul>
+<p>4、资源容器（container）<br>        固定大小的内存分片、CPU核心数、网络带宽、硬盘空间块。<br>        每个节点由多个512M或者1G大小的内存容器组成。<br>        在MapReduce V1中将资源组织成map池 reduce池。</p>
+<p>二、新旧版本对比</p>
+<p>Yarn 框架相对于老的 MapReduce 框架什么优势呢？我们可以看到：</p>
+<ul>
+<li>这个设计大大减小了 JobTracker（也就是现在的 ResourceManager）的资源消耗，并且让监测每一个 Job 子任务 (tasks) 状态的程序分布式化了，更安全、更优美。</li>
+<li>在新的 Yarn 中，ApplicationMaster 是一个可变更的部分，用户可以对不同的编程模型写自己的 AppMst，让更多类型的编程模型能够跑在 Hadoop 集群中，可以参考 hadoop Yarn 官方配置模板中的 mapred-site.xml 配置。</li>
+<li>对于资源的表示以内存为单位 ( 在目前版本的 Yarn 中，没有考虑 cpu 的占用 )，比之前以剩余 slot 数目更合理。</li>
+<li>老的框架中，JobTracker 一个很大的负担就是监控 job 下的 tasks 的运行状况，现在，这个部分就扔给 ApplicationMaster 做了，而 ResourceManager 中有一个模块叫做 ApplicationsMasters( 注意不是 ApplicationMaster)，它是监测 ApplicationMaster 的运行状况，如果出问题，会将其在其他机器上重启。</li>
+<li>Container 是 Yarn 为了将来作资源隔离而提出的一个框架。这一点应该借鉴了        Mesos 的工作，目前是一个框架，仅仅提供 java 虚拟机内存的隔离 ,hadoop 团队的设计思路应该后续能支持更多的资源调度和控制 , 既然资源表示成内存量，那就没有了之前的 map slot/reduce slot 分开造成集群资源闲置的尴尬情况。</li>
+</ul>
+<p>三、Task调度执行流程<br>        <img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fq4ztr3i89j30vm0luq7o.jpg" alt=""><br>    1、MapReduce框架接收用户提交的作业，并为其分配一个新的应用ID,并将应用的定义打包上传到HDFS上用户的应用缓存目录，然后将此应用提交给ResourceManager的应用管理器。<br>    2、应用管理器与调度器协商分配运行APPMaster的第一个资源Container，并启动AppMasert。<br>    3、AppMaster计算应用程序所需要的资源，并向调度器发送资源请求。<br>    4、调度器根据自身统计的资源状态和AppMaster的请求分配合适的资源。<br>    5、AppMaster与所分配容器的NodeManager通信，提交task情况和资源使用说明。<br>    6、NodeManager启用容器并运行task<br>    7、AppMaster监控容器上的task执行情况<br>    8、向用户反馈task的执行情况和进度信息。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Hadoop,大数据</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/04/08/YARN详解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-HDFS详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/08/HDFS详解/">HDFS详解</a>
+    </h1>
+  
+
+        
+        <a href="/2018/04/08/HDFS详解/" class="archive-article-date">
+  	<time datetime="2018-04-08T01:09:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一、简介</p>
+<ol>
+<li><p>HDFS前言</p>
+<p>设计思想：</p>
+<pre><code>分而治之，将大文件、大批量文件，分布式存放在大量服务器上，以便于采取 分而治之的方式对海量数据进行运算分析；在大数据系统中作用：为各类分布式运算框架（如：mapreduce，spark，tez，……）提供数据存储服务
+</code></pre><p>重点概念：文件切块，副本存放，元数据</p>
+</li>
+<li><p>HDFS的概念和特性</p>
+<pre><code>首先，它是一个文件系统，用于存储文件，通过统一的命名空间——目录树来定位文件。其次，它是分布式的，由很多服务器联合起来实现其功能，集群中的服务器有各自的角色； 重要特性如下：
+</code></pre></li>
+</ol>
+<ul>
+<li>namenode是HDFS集群主节点，负责维护整个hdfs文件系统的目录树，以及每一个路径（文件）所对应的block块信息（block的id，及所在的datanode服务器） </li>
+<li>datanode是HDFS集群从节点，每一个block都可以在多个datanode上存储多个副本（副本数量也可以通过参数设置dfs.replication）</li>
+<li>HDFS中的文件在物理上是分块存储（block），块的大小可以通过配置参数( dfs.blocksize)来规定，默认大小在hadoop2.x版本中是128M，老版本中是64M</li>
+<li>HDFS文件系统会给客户端提供一个统一的抽象目录树，客户端通过路径来访问文件，形如：hdfs://namenode:port/dir-a/dir-b/dir-c/file.data目录结构及文件分块信息(元数据)的管理由namenode节点承担，文件的各个block的存储管理由datanode节点承担。</li>
+<li>HDFS是设计成适应一次写入，多次读出的场景，且不支持文件的修改<br>(注：适合用来做数据分析，并不适合用来做网盘应用，因为，不便修改，延迟大，网络开销大，成本太高)</li>
+</ul>
+<p>二、体系结构</p>
+<p>1、HDFS集群分为两大角色：NameNode、DataNode</p>
+<ul>
+<li>NameNode：管理文件系统的namespace，维护整个文件系统的文件目录树以及这些文件的索引目录，也就是管理整个文件系统的元数据。谢谢元数据信息以两种方式存储在本地文件系统中，是image和edits，NameNode会在系统启东市将这些信息载入内存。</li>
+<li>DataNode：负责管理文件数据分块。通过心跳定时向NameNode发送所存储的文件块信息。</li>
+</ul>
+<p>2、写数据流程<br>        客户端要向HDFS写数据，首先要跟Namenode通信以确认可以写文件并获得接收文件block的Datanode，然后，客户端按顺序将文件逐个block传递给相应Datanode，并由接收到block的Datanode负责向其他Datanode复制block的副本。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fq4zp5vn0gj30ya0lwn2t.jpg" alt=""></p>
+<pre><code>1. 根namenode通信请求上传文件，namenode检查目标文件是否已存在，父目录是否存在
+2. namenode返回是否可以上传
+3. client请求第一个 block该传输到哪些datanode服务器上
+4. namenode返回3个datanode服务器ABC
+5. client请求3台dn中的一台A上传数据（本质上是一个RPC调用，建立pipeline），A收到请求会继续调用B，然后B调用C，将真个pipeline建立完成，逐级返回客户端
+6. client开始往A上传第一个block（先从磁盘读取数据放到一个本地内存缓存），以packet为单位，A收到一个packet就会传给B，B传给C；A每传一个packet会放入一个应答队列等待应答
+7. 当一个block传输完成之后，client再次请求namenode上传第二个block的服务器。
+</code></pre><p>3、读数据流程<br>        客户端将要读取的文件路径发送给namenode，namenode获取文件的元信息（主要是block的存放位置信息）返回给客户端，客户端根据返回的信息找到相应datanode逐个获取文件的block并在客户端本地进行数据追加合并从而获得整个文件</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fq4zq29x7vj31540ju0wt.jpg" alt=""></p>
+<pre><code>1. 跟namenode通信查询元数据，找到文件块所在的datanode服务器
+2. 挑选一台datanode（就近原则，然后随机）服务器，请求建立socket流
+3. datanode开始发送数据（从磁盘里面读取数据放入流，以packet为单位来做校验）
+4. 客户端以packet为单位接收，现在本地缓存，然后写入目标文件
+</code></pre><p>4、副本存放于读取策略<br>        机架感知策略：默认情况下，副本数量为3，hdfs的存放策略</p>
+<pre><code>* 一个副本存放在本机架的节点上
+* 一个副本存放在本机架的另一个节点上
+* 一个副本放在不同的机架上
+</code></pre><p>5、安全模式<br>        NameNode启动后进入安全模式，不会进行数据块的复制，NameNode检测DataNode上传的数据块信息中副本数量是否达到了最小副本数，当确认副本安全的数据块达到一定比例后，就退出安全模式。然后将没有达到指定副本数的数据块复制到其他DataNode节点上。</p>
+<p>6、文件安全<br>        在另一个节点上同步运行一个ScondaryNameNode周期性的合并edits和image。</p>
+<p>三、工作机制</p>
+<p> 1、元数据存储机制</p>
+<ul>
+<li>内存中有一份完整的元数据：meta.data</li>
+<li>磁盘中有一份“准完整”的元数据镜像：fsimage</li>
+<li>日志文件edits<br>备注：用户对数据的更新修改等操作首先会记录到edits日志文件中，当用户的操作成功提交后，相应的元数据会更新到内存中的meta.data中。</li>
+</ul>
+<p>2、元数据的checkpoint<br>        每隔一段时间，SecondaryNameNode会将最新的edits日志文件和NameNode上最新的fsimage下载到本地磁盘中，并加载到内存进行合并，这个过程就是checkpoint。</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fq4zr0braij30yk0iodkr.jpg" alt=""></p>
+<p>3、DataNode工作机制<br>        Datanode工作职责：存储管理用户的文件块数据，定期向namenode汇报自身所持有的block信息（通过心跳信息上报），datanode进程死亡或者网络故障造成datanode无法与namenode通信，namenode不会立即把该节点判定为死亡，要经过一段时间，这段时间暂称作超时时长。HDFS默认的超时时长为10分钟+30秒。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Hadoop,大数据</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/04/08/HDFS详解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-git学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -587,15 +820,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">error</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
               </li>
             
             <div class="clearfix"></div>

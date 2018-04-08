@@ -6,19 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://luokp.me">
-  <title>luokp&#39;blogs</title>
+  <title>YARN详解 | luokp&#39;blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="##git命令学习 现在总结一下今天学的两点内容： 初始化一个Git仓库，使用git init命令。 添加文件到Git仓库，分两步： $ git add ，注意，可反复多次使用，添加多个文件； $ git commit，命令带参数，-m后面输入的是本次提交的说明，可以输入任意内容，当然最好是有意义的，这样你就能从历史记录里方便地找到改动记录。 $ git log命令显示从最近到最远的提交日志.如果">
-<meta name="keywords" content="Java,大数据,后端,spring,hadoop,spark,HBASE,开发者,程序员,极客,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek">
+  <meta name="description" content="一、第二代MapReduce    上一代MapReduce框架的JobTracker/TaskTracker 机制需要大规模的调整来修复它在可扩展性，内存消耗，线程模型，可靠性和性能上的缺陷。为从根本上解决旧 MapReduce 框架的性能瓶颈，促进 Hadoop 框架的更长远发展，从 0.23.0 版本开始，Hadoop 的 MapReduce 框架完全重构，发生了根本的变化。新的 Hadoo">
+<meta name="keywords" content="Hadoop,大数据">
 <meta property="og:type" content="article">
-<meta property="og:title" content="luokp&#39;blogs">
-<meta property="og:url" content="http://luokp.me/2018/01/07/git学习/index.html">
+<meta property="og:title" content="YARN详解">
+<meta property="og:url" content="http://luokp.me/2018/04/08/YARN详解/index.html">
 <meta property="og:site_name" content="luokp&#39;blogs">
-<meta property="og:description" content="##git命令学习 现在总结一下今天学的两点内容： 初始化一个Git仓库，使用git init命令。 添加文件到Git仓库，分两步： $ git add ，注意，可反复多次使用，添加多个文件； $ git commit，命令带参数，-m后面输入的是本次提交的说明，可以输入任意内容，当然最好是有意义的，这样你就能从历史记录里方便地找到改动记录。 $ git log命令显示从最近到最远的提交日志.如果">
-<meta property="og:updated_time" content="2018-04-07T16:08:44.081Z">
+<meta property="og:description" content="一、第二代MapReduce    上一代MapReduce框架的JobTracker/TaskTracker 机制需要大规模的调整来修复它在可扩展性，内存消耗，线程模型，可靠性和性能上的缺陷。为从根本上解决旧 MapReduce 框架的性能瓶颈，促进 Hadoop 框架的更长远发展，从 0.23.0 版本开始，Hadoop 的 MapReduce 框架完全重构，发生了根本的变化。新的 Hadoo">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fq4ztpyhxij30er09iglz.jpg">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fq4ztr3i89j30vm0luq7o.jpg">
+<meta property="og:updated_time" content="2018-04-08T01:37:43.796Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="luokp&#39;blogs">
-<meta name="twitter:description" content="##git命令学习 现在总结一下今天学的两点内容： 初始化一个Git仓库，使用git init命令。 添加文件到Git仓库，分两步： $ git add ，注意，可反复多次使用，添加多个文件； $ git commit，命令带参数，-m后面输入的是本次提交的说明，可以输入任意内容，当然最好是有意义的，这样你就能从历史记录里方便地找到改动记录。 $ git log命令显示从最近到最远的提交日志.如果">
+<meta name="twitter:title" content="YARN详解">
+<meta name="twitter:description" content="一、第二代MapReduce    上一代MapReduce框架的JobTracker/TaskTracker 机制需要大规模的调整来修复它在可扩展性，内存消耗，线程模型，可靠性和性能上的缺陷。为从根本上解决旧 MapReduce 框架的性能瓶颈，促进 Hadoop 框架的更长远发展，从 0.23.0 版本开始，Hadoop 的 MapReduce 框架完全重构，发生了根本的变化。新的 Hadoo">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fq4ztpyhxij30er09iglz.jpg">
   
     <link rel="alternative" href="/atom.xml" title="luokp&#39;blogs" type="application/atom+xml">
   
@@ -158,38 +161,58 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-git学习" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-YARN详解" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      YARN详解
+    </h1>
+  
+
+        
+        <a href="/2018/04/08/YARN详解/" class="archive-article-date">
+  	<time datetime="2018-04-08T01:09:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-08</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>##git命令学习</p>
-<p>现在总结一下今天学的两点内容：</p>
-<p>初始化一个Git仓库，使用git init命令。</p>
-<p>添加文件到Git仓库，分两步：</p>
-<p>$ git add <file>，注意，可反复多次使用，添加多个文件；</file></p>
-<p>$ git commit，命令带参数，-m后面输入的是本次提交的说明，可以输入任意内容，当然最好是有意义的，这样你就能从历史记录里方便地找到改动记录。</p>
-<p>$ git log命令显示从最近到最远的提交日志.如果嫌输出信息太多，看得眼花缭乱的，可以试试加上–pretty=oneline参数</p>
-<p>$ git reset –hard HEAD^回退到上一版本，git reset –hard commit_id  可指定版本。</p>
-<p>$ git reflog用来记录你的每一次命令</p>
-<p>$  git checkout – readme.txt意思就是，把readme.txt文件在工作区的修改全部撤销</p>
-<p>$  git rm用于删除一个文件</p>
-<p> 要关联一个远程库，使用命令git remote add origin git@server-name:path/repo-name.git；</p>
-<p> 关联后，使用命令git push -u origin master第一次推送master分支的所有内容；</p>
-<p> 此后，每次本地提交后，只要有必要，就可以使用命令git push origin master推送最新修改；</p>
-<p> $ 命令git clone克隆一个本地库：  git clone git@github.com:michaelliao/gitskills.git</p>
-<p>查看分支：git branch</p>
-<p>创建分支：git branch <name></name></p>
-<p>切换分支：git checkout <name></name></p>
-<p>创建+切换分支：git checkout -b <name></name></p>
-<p>合并某分支到当前分支：git merge <name></name></p>
-<p>删除分支：git branch -d <name></name></p>
-<p>查看分支：git branch</p>
-<p>创建分支：git branch <name></name></p>
-<p>切换分支：git checkout <name></name></p>
-<p>创建+切换分支：git checkout -b <name></name></p>
-<p>合并某分支到当前分支：git merge <name></name></p>
-<p>删除分支：git branch -d <name></name></p>
+        <p>一、第二代MapReduce<br>    上一代MapReduce框架的JobTracker/TaskTracker 机制需要大规模的调整来修复它在可扩展性，内存消耗，线程模型，可靠性和性能上的缺陷。为从根本上解决旧 MapReduce 框架的性能瓶颈，促进 Hadoop 框架的更长远发展，从 0.23.0 版本开始，Hadoop 的 MapReduce 框架完全重构，发生了根本的变化。新的 Hadoop MapReduce 框架命名为 MapReduceV2 或者叫 Yarn，其架构图如下图所示：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fq4ztpyhxij30er09iglz.jpg" alt=""></p>
+<pre><code>图 2. 新的 Hadoop MapReduce 框架（Yarn）架构
+</code></pre><p>1、资源管理器（ResourceManager）<br>            分为两个组件：</p>
+<ul>
+<li>调度器（Scheduler）：根据集群中容量、队列和资源等限制，将资源分配给正在运行的应用。根据各个应用的资源需求和集群各个节点的资源容器（Resource Container，是集群几点将自身的cpu、内存、磁盘等资源的一种抽象封装）进行调度。</li>
+<li>应用管理器（ApplicationManager）：负责接收作业，协商获取第一个资源容器用于执行作业，为重启失败的作业重新分配容器。</li>
+</ul>
+<p>2、节点管理器（NodeManager）<br>        是每个节点的框架代理。主要功能：</p>
+<ul>
+<li>启动调度器分配给task的容器，为task构建容器环境</li>
+<li>监控容器的资源使用（CPU、内存、硬盘、网络带宽）</li>
+<li>与调度器保持信息汇报交互</li>
+</ul>
+<p>3、应用主体（AppMaster）<br>        每一个应用都有一个对应的APPMaster，主要职责：</p>
+<ul>
+<li>与调度器协商资源</li>
+<li>启动并监控在容器中运行的task（map/reduce）</li>
+<li>若task出现故障，向调度器重新申请分配其他容器资源，并重新启动task</li>
+<li>计算应用程序所需的资源数目，转化成调度器可识别的协议信息包。</li>
+</ul>
+<p>4、资源容器（container）<br>        固定大小的内存分片、CPU核心数、网络带宽、硬盘空间块。<br>        每个节点由多个512M或者1G大小的内存容器组成。<br>        在MapReduce V1中将资源组织成map池 reduce池。</p>
+<p>二、新旧版本对比</p>
+<p>Yarn 框架相对于老的 MapReduce 框架什么优势呢？我们可以看到：</p>
+<ul>
+<li>这个设计大大减小了 JobTracker（也就是现在的 ResourceManager）的资源消耗，并且让监测每一个 Job 子任务 (tasks) 状态的程序分布式化了，更安全、更优美。</li>
+<li>在新的 Yarn 中，ApplicationMaster 是一个可变更的部分，用户可以对不同的编程模型写自己的 AppMst，让更多类型的编程模型能够跑在 Hadoop 集群中，可以参考 hadoop Yarn 官方配置模板中的 mapred-site.xml 配置。</li>
+<li>对于资源的表示以内存为单位 ( 在目前版本的 Yarn 中，没有考虑 cpu 的占用 )，比之前以剩余 slot 数目更合理。</li>
+<li>老的框架中，JobTracker 一个很大的负担就是监控 job 下的 tasks 的运行状况，现在，这个部分就扔给 ApplicationMaster 做了，而 ResourceManager 中有一个模块叫做 ApplicationsMasters( 注意不是 ApplicationMaster)，它是监测 ApplicationMaster 的运行状况，如果出问题，会将其在其他机器上重启。</li>
+<li>Container 是 Yarn 为了将来作资源隔离而提出的一个框架。这一点应该借鉴了        Mesos 的工作，目前是一个框架，仅仅提供 java 虚拟机内存的隔离 ,hadoop 团队的设计思路应该后续能支持更多的资源调度和控制 , 既然资源表示成内存量，那就没有了之前的 map slot/reduce slot 分开造成集群资源闲置的尴尬情况。</li>
+</ul>
+<p>三、Task调度执行流程<br>        <img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fq4ztr3i89j30vm0luq7o.jpg" alt=""><br>    1、MapReduce框架接收用户提交的作业，并为其分配一个新的应用ID,并将应用的定义打包上传到HDFS上用户的应用缓存目录，然后将此应用提交给ResourceManager的应用管理器。<br>    2、应用管理器与调度器协商分配运行APPMaster的第一个资源Container，并启动AppMasert。<br>    3、AppMaster计算应用程序所需要的资源，并向调度器发送资源请求。<br>    4、调度器根据自身统计的资源状态和AppMaster的请求分配合适的资源。<br>    5、AppMaster与所分配容器的NodeManager通信，提交task情况和资源使用说明。<br>    6、NodeManager启用容器并运行task<br>    7、AppMaster监控容器上的task执行情况<br>    8、向用户反馈task的执行情况和进度信息。</p>
 
       
 
@@ -219,6 +242,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Hadoop,大数据</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -269,7 +303,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://luokp.me/2018/01/07/git学习/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://luokp.me/2018/04/08/YARN详解/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -283,18 +317,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/04/08/HDFS详解/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/04/08/Hadoop简介/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          HDFS详解
+          Hadoop简介
         
       </div>
     </a>
   
   
-    <a href="/2017/12/27/reverse-pairs/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">reverse pairs</div>
+    <a href="/2018/04/08/HDFS详解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">HDFS详解</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -325,8 +359,8 @@
   <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
 <script>
   var cloudTieConfig = {
-    url: "http://luokp.me/2018/01/07/git学习/", 
-    sourceId: "git学习",
+    url: "http://luokp.me/2018/04/08/YARN详解/", 
+    sourceId: "YARN详解",
     productKey: "true",
     target: "cloud-tie-wrapper"
   };
