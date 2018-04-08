@@ -156,6 +156,90 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Hadoop简介" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/08/Hadoop简介/">Hadoop简介</a>
+    </h1>
+  
+
+        
+        <a href="/2018/04/08/Hadoop简介/" class="archive-article-date">
+  	<time datetime="2018-04-08T01:09:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一、Hadoop是什么？<br>        hadoop是Apache旗下的一个开源的分布式计算平台。以分布式文件系统（HDFS）、分布式计算框架（MapReduce）、分布式资源调度管理平台（YARN）三大模块为核心的hadoop为用户提供了系统层面细节透明的分布式基础框架。用户可以利用Hadoop轻松地组织计算机资源，利用廉价的计算机集群搭建自己的分布式计算平台，充分利用集群的计算能力和存储能力，完成海量数据的处理。</p>
+<p>二、Hadoop的项目结构</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fq4z9naytvj314s0sonfm.jpg" alt=""><br>1、Apache Hive:是基于Hadoop的一个数据仓库工具，可以将结构化的数据文件映射为一张数据库表，通过类SQ    L语句快速实现简单的MapReduce统计，不必开发专门的MapReduce应用，十分适合数据仓库的统计分析。<br>2、Apache Pig:是一个基于Hadoop的大规模数据分析工具，它提供的SQL-LIKE语言叫PigLatin，该语言的编    译器会把类SQL的数据分析请求转换为一系列经过优化处理的MapReduce运算。<br>3、Apache HBase:是一个高可靠性、高性能、面向列、可伸缩的分布式存储系统，利用HBase技术可在廉价PCSe    rver上搭建起大规模结构化存储集群。<br>4、Apache Sqoop:是一个用来将Hadoop和关系型数据库中的数据相互转移的工具，可以将一个关系型数据库（MySQL,Oracle,Postgres等）中的数据导进到Hadoop的HDFS中，也可以将HDFS的数据导进到关系型数据库中。<br>5、Apache Zookeeper:是一个为分布式应用所设计的分布的、开源的协调服务，它主要是用来解决分布式应用中    经常遇到的一些数据管理问题，简化分布式应用协调及其管理的难度，提供高性能的分布式服务。<br>6、Apache Flume:是一个分布的、可靠的、高可用的海量日志聚合的系统，可用于日志数据收集，日志数据处理    ，日志数据传输。</p>
+<p>三、HDFS文件系统</p>
+<p>HDFS（Hadoop Distributed File System，Hadoop分布式文件系统），它是一个高度容错性的系统，适合部署在廉价的机器上。HDFS能提供高吞吐量的数据访问，适合那些有着超大数据集（largedata set）的应用程序。</p>
+<p>HDFS的设计特点:<br>        1、大数据文件，非常适合上T级别的大文件或者一堆大数据文件的存储。文件分块存储，HDFS会将一个完整的大文件平均分块存储到不同计算器上，它的意义在于读取文件时可以同时从多个主机取不同区块的文件，多主机读取比单主机读取效率要高得多。<br>        2、流式数据访问，简化一致性模型，一次写入多次读写，这种模式跟传统文件不同，它不支持动态改变文件内容，而是要求让文件一次写入就不做变化，要变化也只能在文件末添加内容。<br>        3、廉价硬件，HDFS可以应用在普通PC机上，这种机制能够让给一些公司用几十台廉价的计算机就可以撑起一个大数据集群。<br>        4、快速硬件故障，HDFS认为所有计算机都可能会出问题，为了防止某个主机失效读取不到该主机的块文件，它将同一个文件块副本分配到其它某几个主机上，如果其中一台主机失效，可以迅速找另一块副本取文件。<br>       四、MapReduce分布式计算框架<br>        MapReduce是一种编程模型，用于大规模数据集（大于1TB）的运算。MapReduce将分成两个部分”Map（映射）”和”Reduce（归约）”。<br>当你向MapReduce框架提交一个计算作业时，它会首先把计算作业拆分成若干个Map任务，然后分配到不同的节点上去执行，每一个Map任务处理输入数据中的一部分，当Map任务完成后，它会生成一些中间文件，这些中间文件将会作为Reduce任务的输入数据。Reduce任务的主要目标就是把前面若干个Map的输出汇总到一起并输出。<br>五、YARN - 新一代分布式资源调度框架</p>
+<pre><code>上一代MapReduce框架的JobTracker/TaskTracker 机制需要大规模的调整来修复它在可扩展性，内存消耗，线程模型，可靠性和性能上的缺陷。为从根本上解决旧 MapReduce 框架的性能瓶颈，促进 Hadoop 框架的更长远发展，从 0.23.0 版本开始，Hadoop 的 MapReduce 框架完全重构，发生了根本的变化。新的 Hadoop MapReduce 框架命名为 MapReduceV2 或者叫 Yarn，其架构图如下图所示：
+</code></pre><p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fq4z9rw7d2j30er09iglz.jpg" alt=""><br>                图 2. 新的 Hadoop MapReduce 框架（Yarn）架构</p>
+<ul>
+<li></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Hadoop,大数据</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/04/08/Hadoop简介/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-git学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -312,7 +396,8 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/20/Java-error-set/">Java error-set《java compiler level does not match the version of the installed java project face》</a>
+      <a class="article-title" href="/2017/12/20/Java-error-set/">java compiler level does not match the version of the installed java project face
+</a>
     </h1>
   
 
@@ -345,7 +430,33 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">error</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/Java-error-set//" class="article-tag-list-link color5">Java error-set</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
@@ -470,6 +581,18 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Hadoop,大数据</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">error</a>
+              </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">LeetCode</a>
