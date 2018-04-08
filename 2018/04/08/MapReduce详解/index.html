@@ -6,15 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://luokp.me">
-  <title>Archives: 2017/12 | luokp&#39;blogs</title>
+  <title>MapReduce详解 | luokp&#39;blogs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="Java,大数据,后端,spring,hadoop,spark,HBASE,开发者,程序员,极客,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek">
-<meta property="og:type" content="website">
-<meta property="og:title" content="luokp&#39;blogs">
-<meta property="og:url" content="http://luokp.me/archives/2017/12/index.html">
+  <meta name="description" content="MapReduce是一个分布式计算的框架，将分布式计算程序的公共功能封装起来，让开发人员集中精力于业务逻辑中。 一个完整的MapReduce程序在分布式运行时有三类实例进程：     1. MRAppMaster：负责整个过程的调度和状态协调     2. mapTask：负责map阶段的数据流处理     3. reduceTask：负责reduce阶段数据流处理  流程解析： 1. MR程序">
+<meta name="keywords" content="hadoop,大数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce详解">
+<meta property="og:url" content="http://luokp.me/2018/04/08/MapReduce详解/index.html">
 <meta property="og:site_name" content="luokp&#39;blogs">
+<meta property="og:description" content="MapReduce是一个分布式计算的框架，将分布式计算程序的公共功能封装起来，让开发人员集中精力于业务逻辑中。 一个完整的MapReduce程序在分布式运行时有三类实例进程：     1. MRAppMaster：负责整个过程的调度和状态协调     2. mapTask：负责map阶段的数据流处理     3. reduceTask：负责reduce阶段数据流处理  流程解析： 1. MR程序">
+<meta property="og:updated_time" content="2018-04-08T08:56:58.987Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="luokp&#39;blogs">
+<meta name="twitter:title" content="MapReduce详解">
+<meta name="twitter:description" content="MapReduce是一个分布式计算的框架，将分布式计算程序的公共功能封装起来，让开发人员集中精力于业务逻辑中。 一个完整的MapReduce程序在分布式运行时有三类实例进程：     1. MRAppMaster：负责整个过程的调度和状态协调     2. mapTask：负责map阶段的数据流处理     3. reduceTask：负责reduce阶段数据流处理  流程解析： 1. MR程序">
   
     <link rel="alternative" href="/atom.xml" title="luokp&#39;blogs" type="application/atom+xml">
   
@@ -154,114 +158,208 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-MapReduce详解" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/12/27/reverse-pairs/" class="archive-article-date">
-  	<time datetime="2017-12-27T13:13:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-27</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/27/reverse-pairs/">reverse pairs</a>
+    <h1 class="article-title" itemprop="name">
+      MapReduce详解
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/04/08/MapReduce详解/" class="archive-article-date">
+  	<time datetime="2018-04-08T08:54:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p> MapReduce是一个分布式计算的框架，将分布式计算程序的公共功能封装起来，让开发人员集中精力于业务逻辑中。 一个完整的MapReduce程序在分布式运行时有三类实例进程：</p>
+<pre><code>    1. MRAppMaster：负责整个过程的调度和状态协调
+    2. mapTask：负责map阶段的数据流处理
+    3. reduceTask：负责reduce阶段数据流处理
+
+流程解析：
+1. MR程序提交一个job时，首先启动一个MRAppMaster，然后MRAppMaster根据本次job的描述信息计算出需要启动大maptask数量，并向调度器申请相应的资源
+2. maptask启动后，根据给定的切片信息进行数据处理，流程为：
+    * 获取数据形成kv对输入到用户定义的map（）方法中，做相应的逻辑处理后，输出kv对到环形缓冲区，根据partition定义的分区排序后不断溢出成小文件写入到磁盘文件中。
+     3、监控到maptask任务完成后，根据客户指定 的参数启动相应数量的reduceTask，并通知reducetask进程要处理的数据范围（数据分区）。
+4、Reducetask进程启动之后，根据MRAppMaster告知的待处理数据所在位置，从若干台maptask运行所在机器上获取到若干个maptask输出结果文件，并在本地进行重新归并排序，然后按照相同key的KV为一个组，调用客户定义的reduce()方法进行逻辑运算，并收集运算输出的结果KV，然后调用客户指定的outputformat将结果数据输出到外部存储
+</code></pre><p>mapTask任务并行度：</p>
+<pre><code>* 每个map的执行时间大概一分钟
+* 如果input文件过大，可以考虑将blocksize变大。
+reduceTask任务并行度：比集群中reduce slots小或持平，一般与分区数量相同。
+</code></pre><p>Conbiner</p>
+<pre><code>1.     combiner组件的父类就是reducer
+2. 在每一个mapTask所在节点运行，对输出进行局部汇总，以减小网络传输量。
+3. 运用的前提是不能影响最终的业务网逻辑
+</code></pre><p>Shuffle</p>
+<pre><code>对maptask输出的处理结果数据，按key进行了分区和排序，具体流程：
+1. maptask将输出文件放入环形缓冲区，不断溢出成分区的小文件
+2. 多个小文件合并成的大文件，每个mapTask最终产生一个
+3. 在溢出和合并的过程中，都需要调用partition组件进行分区，并按key进行排序
+4. reduceTask根据自己的分区号，去各个mapTask节点上取相应的结果分区数据
+5. 排序合并成大文件
+</code></pre><p>序列化机制<br>        hadoop自己开发了一套序列化机制（Writable），精简，高效<br>自定义对象实现mr中的序列化接口，需要重写两个方法。</p>
+<p>public  class  FlowBean  implements  WritableComparable<flowbean>{</flowbean></p>
+<p>@Override<br>           public void readFields(DataInput in) throws IOException { }</p>
+<p>@Override<br>           public void write(DataOutput out) throws IOException { }</p>
+<p>}</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">LeetCode</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">hadoop,大数据</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://luokp.me/2018/04/08/MapReduce详解/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/12/20/Java-error-set/" class="archive-article-date">
-  	<time datetime="2017-12-19T16:18:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-20</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/04/08/HDFS详解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">HDFS详解</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/12/20/Java-error-set/">java compiler level does not match the version of the installed java project face
-</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">error</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/Java-error-set//" class="article-tag-list-link color5">Java error-set</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+
   
   
-    </div></section>
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://luokp.me/2018/04/08/MapReduce详解/", 
+    sourceId: "MapReduce详解",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -284,8 +382,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
